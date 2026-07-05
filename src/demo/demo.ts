@@ -2,6 +2,7 @@ import { Panel } from '../widgets/panel';
 import { Button } from '../widgets/button';
 import { Slider } from '../widgets/slider';
 import { Checkbox } from '../widgets/checkbox';
+import { Input } from '../widgets/input';
 import { Root } from '../core/root';
 import { UIManager } from '../core/uimanager';
 
@@ -34,7 +35,7 @@ export function createDemo(canvas: HTMLCanvasElement): {
 
   const panel = new Panel({
     x: 40, y: 40,
-    width: 480, height: 385,
+    width: 480, height: 425,
     title: 'Canvas UI Demo',
   });
 
@@ -165,14 +166,22 @@ export function createDemo(canvas: HTMLCanvasElement): {
   });
   infoLabel3.enabled = false;
 
+  const nameLabel = new Button({
+    x: 15, y: 115,
+    width: 190, height: 24,
+    label: 'Nome: ',
+  });
+  nameLabel.enabled = false;
+
   const infoPanel = new Panel({
     x: RX, y: 30,
-    width: RW, height: 120,
+    width: RW, height: 145,
     title: 'Informações',
   });
   infoPanel.addChild(infoLabel1);
   infoPanel.addChild(infoLabel2);
   infoPanel.addChild(infoLabel3);
+  infoPanel.addChild(nameLabel);
 
   const showHexCheckbox = new Checkbox({
     x: 10, y: 24,
@@ -212,7 +221,7 @@ export function createDemo(canvas: HTMLCanvasElement): {
   };
 
   const settingsPanel = new Panel({
-    x: RX, y: 160,
+    x: RX, y: 180,
     width: RW, height: 135,
     title: 'Configurações',
   });
@@ -220,9 +229,20 @@ export function createDemo(canvas: HTMLCanvasElement): {
   settingsPanel.addChild(extraInfoCheckbox);
   settingsPanel.addChild(logButton);
 
+  // ---- Input field ----
+  const nameInput = new Input({
+    x: 10, y: 345,
+    width: 460, height: 30,
+    placeholder: 'Digite seu nome...',
+  });
+  nameInput.onChange = (value) => {
+    nameLabel.label = value ? `Nome: ${value}` : 'Nome: ';
+    nameLabel.markDirty();
+  };
+
   // ---- Bottom status bar ----
   const statusLabel = new Button({
-    x: 10, y: 345,
+    x: 10, y: 385,
     width: 460, height: 28,
     label: 'Contador: 0  |  RGB: (0.50, 0.50, 0.50)  |  HEX: #804080',
   });
@@ -265,6 +285,7 @@ export function createDemo(canvas: HTMLCanvasElement): {
   panel.addChild(blueSlider);
   panel.addChild(infoPanel);
   panel.addChild(settingsPanel);
+  panel.addChild(nameInput);
   panel.addChild(statusLabel);
 
   const root = new Root({ x: 0, y: 0, width: 800, height: 600 });

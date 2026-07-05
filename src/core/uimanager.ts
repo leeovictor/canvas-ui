@@ -2,6 +2,7 @@ import { Widget } from './widget';
 import { Root } from './root';
 import { hitTestTree } from './hittest';
 import { Slider } from '../widgets/slider';
+import { Input } from '../widgets/input';
 
 export class UIManager {
   root: Root;
@@ -77,6 +78,22 @@ export class UIManager {
 
     const target = hitTestTree(this.root, absX, absY);
     if (target && target !== this.root && target.visible && target.enabled) {
+      if (target instanceof Input) {
+        if (this.focusedNode && this.focusedNode !== target && this.focusedNode instanceof Input) {
+          this.focusedNode.focused = false;
+          this.focusedNode.handleBlur();
+        }
+        this.focusedNode = target;
+        target.focused = true;
+        target.handleFocus();
+      } else {
+        if (this.focusedNode && this.focusedNode instanceof Input) {
+          this.focusedNode.focused = false;
+          this.focusedNode.handleBlur();
+          this.focusedNode = null;
+        }
+      }
+
       if (target instanceof Slider) {
         const offset = this._getAccumulatedTranslate(target);
         const localX = absX - offset.x;
@@ -94,6 +111,12 @@ export class UIManager {
       this.activeNode = target;
       target.pressed = true;
       target.markDirty();
+    } else {
+      if (this.focusedNode && this.focusedNode instanceof Input) {
+        this.focusedNode.focused = false;
+        this.focusedNode.handleBlur();
+        this.focusedNode = null;
+      }
     }
   }
 
@@ -163,9 +186,21 @@ export class UIManager {
     this.canvas.addEventListener('mousedown', onDown);
     this.canvas.addEventListener('mouseup', onUp);
 
+    const onKeyDown = (e: Event) => {
+      const ke = e as KeyboardEvent;
+      if (this.focusedNode && this.focusedNode instanceof Input) {
+        if (this.focusedNode.handleKeyDown(ke)) {
+          ke.preventDefault();
+          this.root.markDirty();
+        }
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+
     this._listeners.push({ type: 'mousemove', handler: onMove });
     this._listeners.push({ type: 'mousedown', handler: onDown });
     this._listeners.push({ type: 'mouseup', handler: onUp });
+    this._listeners.push({ type: 'keydown', handler: onKeyDown as EventListener });
 
     this.root.setUIManagerRef(this);
   }
@@ -190,7 +225,11 @@ export class UIManager {
 
   updateCursor(): void {
     if (this.hoveredNode && this.hoveredNode.enabled) {
-      this.canvas.style.cursor = 'pointer';
+      if (this.hoveredNode instanceof Input) {
+        this.canvas.style.cursor = 'text';
+      } else {
+        this.canvas.style.cursor = 'pointer';
+      }
     } else {
       this.canvas.style.cursor = 'default';
     }

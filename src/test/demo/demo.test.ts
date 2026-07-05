@@ -58,10 +58,11 @@ function findWidgets(panel: Panel) {
     infoPanel,
     settingsPanel,
     infoLabel3: infoPanel.children[2] as Button,
+    nameLabel: infoPanel.children[3] as Button,
     showHexCheckbox: settingsPanel.children[0] as Checkbox,
     extraInfoCheckbox: settingsPanel.children[1] as Checkbox,
     logButton: settingsPanel.children[2] as Button,
-    statusLabel: panel.children[12] as Button,
+    statusLabel: panel.children[13] as Button,
   };
 }
 
@@ -76,7 +77,7 @@ describe('Demo — createDemo', () => {
 
     const panel = root.children[0];
     expect(panel).toBeInstanceOf(Panel);
-    expect(panel.children).toHaveLength(13);
+    expect(panel.children).toHaveLength(14);
   });
 
   it('2. Click no botão incrementa contador', () => {

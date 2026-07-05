@@ -8,6 +8,7 @@ export interface ThemeColors {
   disabled: string;
   accent: string;
   surface: string;
+  placeholder: string;
 }
 
 export interface Theme {
@@ -27,6 +28,7 @@ export const defaultTheme: Theme = {
     disabled: '#d9d9d9',
     accent: '#722ed1',
     surface: '#f5f5f5',
+    placeholder: '#bfbfbf',
   },
   font: '14px sans-serif',
   fontSize: 14,
